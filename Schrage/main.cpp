@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
-#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -106,6 +105,7 @@ int main()
 
     for(int i = 0; i <= 8; i++)
     {
+
         std::string name = "data.00" + std::to_string(i) + ":";
         // skip to data
         std::cout << "----------------\nData: " << name << "\n";
@@ -121,14 +121,17 @@ int main()
             fs >> tmp.r >> tmp.p >> tmp.q;
             data.emplace_back(tmp);
         }
-        // STL heap
+
+//        // STL heap
         std::unique_ptr<Heap> stl_heap( new STLHeap() );
         std::cout << "Preemption Schrage: " << prmt_schrage(data, stl_heap) << "\n"
                   << "Schrage: " << schrage(data, stl_heap) << "\nOrder: ";
+
         // My Heap
         std::unique_ptr<Heap> my_heap( new MyHeap() );
         std::cout << "Preemption Schrage: " << prmt_schrage(data, my_heap) << "\n"
                   << "Schrage: " << schrage(data, my_heap) << "\nOrder: ";
+
 //        for (auto &elem: data)
 //            std::cout << elem.id << " ";
 //        std::cout << "\n";

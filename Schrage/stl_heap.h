@@ -31,8 +31,10 @@ RPQ STLHeap::Pop(std::vector<RPQ>& vec, const std::function<bool(RPQ, RPQ)>& com
 }
 
 void STLHeap::Sort(std::vector<RPQ>& vec, const std::function<bool(RPQ, RPQ)> &comp) {
-    std::stable_sort(vec.begin(), vec.end(), comp);
+    std::vector<RPQ> result;
+    Make(vec, comp);
+    while (!vec.empty())
+        result.emplace_back(Pop(vec, comp));
+    std::reverse(result.begin(), result.end());
+    vec = std::move(result);
 }
-
-
-

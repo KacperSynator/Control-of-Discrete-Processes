@@ -37,9 +37,7 @@ RPQ MyHeap::Pop(std::vector<RPQ>& vec, const std::function<bool(RPQ, RPQ)>& comp
     return result;
 }
 
-
 void MyHeap::Sort(std::vector<RPQ>& vec, const std::function<bool(RPQ, RPQ)>& comp) {
-//    std::stable_sort(vec.begin(), vec.end(), comp);
     std::vector<RPQ> result;
     Make(vec, comp);
     while (!vec.empty())
