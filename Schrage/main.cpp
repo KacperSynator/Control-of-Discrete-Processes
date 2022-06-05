@@ -58,6 +58,38 @@ int schrage(std::vector<RPQ>& data, std::unique_ptr<Heap>& heap)
     return  c;
 }
 
+/*! Schrage algorithm without heap */
+int schrage_no_heap(std::vector<RPQ>& data)
+{
+    std::sort(data.begin(), data.end(), RPQ::compare_r);
+    std::vector<RPQ> copy = std::move(data);
+    std::vector<RPQ> tmp_vec;
+
+    int t=0, c=0;
+    while(!tmp_vec.empty() || !copy.empty())
+    {
+        // min r value always at the beginning of copy vector
+        while(!copy.empty() && copy.front().r <= t)
+        {
+            tmp_vec.emplace_back(copy.front());
+            copy.erase(copy.begin());
+        }
+        if(tmp_vec.empty())
+        {
+            t = copy.front().r;
+            continue;
+        }
+        auto max_elem = std::max_element(tmp_vec.begin(), tmp_vec.end(), RPQ::compare_q);
+        data.emplace_back(*max_elem);
+        tmp_vec.erase(max_elem);
+        t += data.back().p;
+        c = std::max(c, t + data.back().q);
+    }
+    return  c;
+}
+
+
+
 /*! Schrage algorithm with process dividing (preemption) */
 int prmt_schrage(std::vector<RPQ> data, std::unique_ptr<Heap>& heap)
 {
@@ -87,6 +119,44 @@ int prmt_schrage(std::vector<RPQ> data, std::unique_ptr<Heap>& heap)
             continue;
         }
         l = heap->Pop(tmp_vec, RPQ::compare_q);
+        t += l.p;
+        c = std::max(c, t + l.q);
+    }
+    return  c;
+}
+
+/*! Schrage algorithm with process dividing (preemption) */
+int prmt_schrage_no_heap(std::vector<RPQ> data)
+{
+    std::sort(data.begin(), data.end(), RPQ::compare_r);
+    std::vector<RPQ> copy = std::move(data);
+    std::vector<RPQ> tmp_vec;
+
+    RPQ l{0, 0, 0, std::numeric_limits<int>::max()};
+    int t=0, c=0;
+    while(!tmp_vec.empty() || !copy.empty())
+    {
+        // min r value at the beginning of copy vector
+        while(!copy.empty() && copy.front().r <= t)
+        {
+            tmp_vec.push_back(copy.front());
+            copy.erase(copy.begin());
+            auto max_elem = *std::max_element(tmp_vec.begin(), tmp_vec.end(), RPQ::compare_q);
+            if(max_elem.q > l.q)
+            {
+                l.p = t - max_elem.r;
+                t = max_elem.r;
+                if(l.p > 0) tmp_vec.push_back(l);
+            }
+        }
+        if(tmp_vec.empty())
+        {
+            t = copy.front().r;
+            continue;
+        }
+        auto max_elem = std::max_element(tmp_vec.begin(), tmp_vec.end(), RPQ::compare_q);
+        l = *max_elem;
+        tmp_vec.erase(max_elem);
         t += l.p;
         c = std::max(c, t + l.q);
     }
@@ -124,13 +194,20 @@ int main()
 
 //        // STL heap
         std::unique_ptr<Heap> stl_heap( new STLHeap() );
+        std::cout << "STL HEAP\n";
         std::cout << "Preemption Schrage: " << prmt_schrage(data, stl_heap) << "\n"
-                  << "Schrage: " << schrage(data, stl_heap) << "\nOrder: ";
+                  << "Schrage: " << schrage(data, stl_heap) << "\n";
 
         // My Heap
-        std::unique_ptr<Heap> my_heap( new MyHeap() );
+        std::unique_ptr<Heap> my_heap( new MyHeap());
+        std::cout << "MY HEAP\n";
         std::cout << "Preemption Schrage: " << prmt_schrage(data, my_heap) << "\n"
-                  << "Schrage: " << schrage(data, my_heap) << "\nOrder: ";
+                  << "Schrage: " << schrage(data, my_heap) << "\n";
+
+        // No Heap
+        std::cout << "NO HEAP\n";
+        std::cout << "Preemption Schrage: " << prmt_schrage_no_heap(data) << "\n"
+                  << "Schrage: " << schrage_no_heap(data) << "\n";
 
 //        for (auto &elem: data)
 //            std::cout << elem.id << " ";
