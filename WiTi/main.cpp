@@ -54,7 +54,6 @@ int pd_algorithm(const std::vector<WiTi>& data, std::vector<int>& order)
                     lut[i] = cost;
                     lut_order[i] = lut_order[i - j];
                     idx = k;
-
                 }
                 else if (lut[i] == cost && (lut_order[i].empty() || lut_order[i] > lut_order[i - j]))
                 {

@@ -134,7 +134,7 @@ bool find_ref_c(std::vector<RPQ>& data, int cmax, unsigned long long& b, unsigne
 void carlier(std::vector<RPQ>& data, int& ub, std::vector<RPQ>& result, std::unique_ptr<Heap>& heap)
 {
     static int depth = 0;
-    if(depth > 100) return;
+    if(depth > 25) return;
     depth++;
 
     int u = schrage(data, heap);
